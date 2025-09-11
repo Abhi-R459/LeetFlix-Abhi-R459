@@ -82,10 +82,9 @@
             const loginForm = document.getElementById("loginForm");
             const errorMessage = document.getElementById("errorMessage");
 
-            // Hardcoded users for testing
             const users = [
-                { username: "premiumUser", password: "pass123"},  // Added 'premium' flag
-                { username: "user1", password: "pass1"}           // Added 'premium' flag
+                { username: "premiumUser", password: "pass123" },
+                { username: "user1", password: "pass1" }
             ];
 
             loginForm.addEventListener("submit", (e) => {
@@ -97,9 +96,7 @@
                 const user = users.find(u => u.username === username && u.password === password);
 
                 if (user) {
-                    // Store user info in localStorage to track login and premium status
                     localStorage.setItem('loggedInUser', JSON.stringify(user));
-                    // Redirect to index.html after login
                     window.location.href = "index.html";
                 } else {
                     errorMessage.textContent = "Invalid username or password.";
@@ -107,8 +104,6 @@
             });
         });
     </script>
-
-
 </body>
 
 </html>
