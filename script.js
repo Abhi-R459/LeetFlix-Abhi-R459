@@ -3,12 +3,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileDropdown = document.getElementById('profileDropdown'); // dropdown container, optional
     const logoutButton = document.getElementById('logoutButton');
 
+    // =====================
     // Fade-in on page load
+    // =====================
     setTimeout(() => {
         document.body.classList.add('visible');
     }, 50);
 
-    // Function to update nav button
+    // =====================
+    // Function to update nav button / dropdown
+    // =====================
     function updateNav() {
         const user = JSON.parse(localStorage.getItem('loggedInUser'));
 
@@ -17,30 +21,30 @@ document.addEventListener('DOMContentLoaded', () => {
             navButton.textContent = 'My Profile';
             navButton.href = '#';
 
-            // Populate dropdown
-            profileDropdown.innerHTML = '';
-            const logoutItem = document.createElement('a');
-            logoutItem.href = "#";
-            logoutItem.textContent = 'Logout';
-            logoutItem.addEventListener('click', (e) => {
-                e.preventDefault();
-                document.body.classList.add('fade-out');
+            if (profileDropdown) {
+                profileDropdown.innerHTML = '';
+                const logoutItem = document.createElement('a');
+                logoutItem.href = "#";
+                logoutItem.textContent = 'Logout';
+                logoutItem.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.body.classList.add('fade-out');
 
-                setTimeout(() => {
-                    localStorage.removeItem('loggedInUser');
-                    updateNav();
-                    document.body.classList.remove('fade-out');
-                    document.body.classList.add('visible');
-                }, 500);
-            });
-            profileDropdown.appendChild(logoutItem);
+                    setTimeout(() => {
+                        localStorage.removeItem('loggedInUser');
+                        updateNav();
+                        document.body.classList.remove('fade-out');
+                        document.body.classList.add('visible');
+                    }, 500);
+                });
+                profileDropdown.appendChild(logoutItem);
+            }
 
         } else {
-            // Not logged in → show Login button with no dropdown
+            // Not logged in → show Login button (no dropdown)
             navButton.textContent = 'Login';
             navButton.href = 'login.html';
 
-            // Hide or clear dropdown if it exists
             if (profileDropdown) {
                 profileDropdown.innerHTML = '';
                 profileDropdown.style.display = 'none';
@@ -50,7 +54,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateNav();
 
-    // Toggle dropdown only if it exists
+    // =====================
+    // Dropdown toggle logic (only if dropdown exists and user is logged in)
+    // =====================
     if (profileDropdown) {
         let dropdownOpen = false;
 
@@ -81,10 +87,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // =====================
     // Fade-out on page refresh
+    // =====================
     window.addEventListener('beforeunload', () => {
         document.body.classList.add('fade-out');
     });
 
-    // Tag filter logic remains the same...
+    // =====================
+    // Tag Filter Logic (persistent across reloads)
+    // =====================
+    const buttons = document.querySelectorAll(".filters .tags button:not(#clearFilters)");
+
+    buttons.forEach((btn, index) => {
+        const storageKey = `tagButton_${index}`;
+
+        // Restore previous state
+        if (localStorage.getItem(storageKey) === "true") {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+
+        // Toggle and save state on click
+        btn.addEventListener("click", () => {
+            btn.classList.toggle("active");
+            localStorage.setItem(storageKey, btn.classList.contains("active"));
+        });
+    });
+
+    // "Remove All Filters" button logic
+    const clearBtn = document.getElementById("clearFilters");
+    clearBtn.addEventListener("click", () => {
+        buttons.forEach((btn, index) => {
+            btn.classList.remove("active");
+            localStorage.setItem(`tagButton_${index}`, "false");
+        });
+    });
 });
