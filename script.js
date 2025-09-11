@@ -1,28 +1,64 @@
-// Select all buttons inside .filters .tags (excluding the Remove All button)
-const buttons = document.querySelectorAll(".filters .tags button:not(#clearFilters)");
+document.addEventListener('DOMContentLoaded', () => {
+  // =========================
+  // Page load fade-in transition
+  // =========================
+  document.body.classList.add('loaded');
 
-// Restore state and add toggle functionality
-buttons.forEach((btn, index) => {
-  const storageKey = `tagButton_${index}`;
+  // =========================
+  // Login / Premium / Logout Button Logic
+  // =========================
+  const navButton = document.getElementById('navButton');
+  const logoutButton = document.getElementById('logoutButton');
 
-  // Restore state from localStorage
-  if (localStorage.getItem(storageKey) === "true") {
-    btn.classList.add("active");
+  function updateNavButtons() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (isLoggedIn) {
+      navButton.textContent = 'Premium';
+      navButton.href = '/premium.html';
+      logoutButton.style.display = 'inline-block';
+    } else {
+      navButton.textContent = 'Login';
+      navButton.href = '/LeetFlix-Abhi-R459/login.html';
+      logoutButton.style.display = 'none';
+    }
   }
 
-  // Toggle on click
-  btn.addEventListener("click", () => {
-    btn.classList.toggle("active");
-    localStorage.setItem(storageKey, btn.classList.contains("active"));
+  logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('isLoggedIn');
+    updateNavButtons();
+    window.location.reload();
   });
-});
 
-// "Remove All Filters" button
-const clearBtn = document.getElementById("clearFilters");
+  updateNavButtons();
 
-clearBtn.addEventListener("click", () => {
+  // =========================
+  // Tag Filter Logic
+  // =========================
+  const buttons = document.querySelectorAll(".filters .tags button:not(#clearFilters)");
+
   buttons.forEach((btn, index) => {
-    btn.classList.remove("active");                       // remove active class
-    localStorage.setItem(`tagButton_${index}`, false);    // clear localStorage
+    const storageKey = `tagButton_${index}`;
+
+    if (localStorage.getItem(storageKey) === "true") {
+      btn.classList.add("active");
+    }
+
+    btn.addEventListener("click", () => {
+      btn.classList.toggle("active");
+      localStorage.setItem(storageKey, btn.classList.contains("active"));
+    });
+  });
+
+  // =========================
+  // "Remove All Filters" Button Logic
+  // =========================
+  const clearBtn = document.getElementById("clearFilters");
+
+  clearBtn.addEventListener("click", () => {
+    buttons.forEach((btn, index) => {
+      btn.classList.remove("active");
+      localStorage.setItem(`tagButton_${index}`, false);
+    });
   });
 });
